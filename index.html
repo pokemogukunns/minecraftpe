@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マインクラフト風バイオーム & 構造物生成</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+        canvas { display: block; margin: 20px auto; }
+        #controls { margin-bottom: 20px; }
+        input, select, button { padding: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>マインクラフト風バイオーム & 構造物生成</h1>
+    <div id="controls">
+        <label for="seed">シード値:</label>
+        <input type="text" id="seed" value="12345">
+        <label for="version">バージョン:</label>
+        <select id="version">
+            <option value="java">Java版</option>
+            <option value="bedrock">統合版</option>
+        </select>
+        <button onclick="generateMap()">生成</button>
+    </div>
+    <canvas id="mapCanvas" width="500" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 100;
+        const scale = 5;
+
+        function noise(x, y, seed) {
+            const n = Math.sin((x + y * 57 + parseInt(seed)) * 0.1) * 10000;
+            return n - Math.floor(n);
+        }
+
+        function getBiome(value) {
+            if (value < 0.2) return ['海', 'blue'];
+            if (value < 0.4) return ['砂漠', 'yellow'];
+            if (value < 0.6) return ['平原', 'green'];
+            if (value < 0.8) return ['森林', 'darkgreen'];
+            return ['山', 'brown'];
+        }
+
+        function generateMap() {
+            const seed = document.getElementById('seed').value;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < size; x++) {
+                for (let y = 0; y < size; y++) {
+                    const value = noise(x, y, seed);
+                    const [biome, color] = getBiome(value);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * scale, y * scale, scale, scale);
+                }
+            }
+        }
+
+        generateMap();
+    </script>
+</body>
+</html>
